@@ -2,8 +2,7 @@ name: CI-CD Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
 
 permissions:
   contents: write
@@ -19,13 +18,13 @@ jobs:
         run: echo "Building project..."
 
       - name: Simulate Tests
+        run: echo "All tests passed!"
+
       - name: Security Scan (Simulated)
         run: |
           echo "Scanning code for vulnerabilities..."
           sleep 2
           echo "✅ No vulnerabilities found in current commit."
-    
-        run: echo "All tests passed!"
 
       - name: Simulate Deployment
         run: |
@@ -43,8 +42,7 @@ jobs:
           echo "Logging deployment data..."
           DEPLOY_TS=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           STATUS=success
-          # Mark as failed if commit message contains [fail]
-          echo "$COMMIT_MSG" | grep -qi "\[fail\]" && STATUS=failed || true
+          if echo "$COMMIT_MSG" | grep -qi "\[fail\]"; then STATUS=failed; fi
           echo "$RUN_ID,$SHA,$COMMIT_TS,$DEPLOY_TS,$STATUS" >> metrics.csv
           echo "Logged: $RUN_ID,$SHA,$COMMIT_TS,$DEPLOY_TS,$STATUS"
 
